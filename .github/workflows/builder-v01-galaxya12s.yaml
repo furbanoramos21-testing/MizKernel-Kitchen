@@ -93,8 +93,12 @@ jobs:
           run: |
             echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG)" >> $GITHUB_ENV
             echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER)" >> $GITHUB_ENV
-            echo "DEBUG IDENT: ${{ steps.set-vars.outputs.IDENTIFIER }}"
-            echo "DEBUG CLOG: ${{ steps.set-vars.outputs.CHANGELOG }}"
+            echo "IDENTIFIER<<EOF" >> $GITHUB_ENV
+            echo "$IDENTIFIER" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+            echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+            echo "$CHANGELOG" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
