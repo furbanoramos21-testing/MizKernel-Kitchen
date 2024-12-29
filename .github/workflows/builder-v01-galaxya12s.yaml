@@ -77,6 +77,7 @@ jobs:
           run: |
             cd MizKernel
             ./build_kernel.sh
+            cd ..
 
         - name: "Pull Finished Kernel"
           run: |
