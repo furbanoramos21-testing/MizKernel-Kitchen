@@ -114,7 +114,7 @@ jobs:
             rm -rf kernel
             kptools-linux -p --image Image-${{github.run_id}} --skey ${{ github.event.inputs.apatch_password }} --kpimg kpimg-android --out kernel
             magiskboot repack boot.img
-            mv new-boot.img ../out/boot-${{github.run_id}}.img 
+            mv new-boot.img ../out/boot.img 
             cd ..
             
 
@@ -132,7 +132,7 @@ jobs:
             rm -rf kernel
             cp Image-${{github.run_id}} kernel
             magiskboot repack boot.img
-            mv new-boot.img ../out/boot-${{github.run_id}}.img
+            mv new-boot.img ../out/boot.img
             cd ..
 
         - name: "Zip it"
@@ -167,6 +167,7 @@ jobs:
             EOF
             zip -r MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip AnyKernel/*
             mv MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+          
 
         - name: "To Github Artifact"
           uses: actions/upload-artifact@v4
@@ -184,9 +185,7 @@ jobs:
           uses: softprops/action-gh-release@v2
           with:
             files: |
-              out/boot-${{github.run_id}}.img
-              out/Image-${{github.run_id}}
-              out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+              out/*
             release_name: "MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}"
             tag_name: "${{ github.run_id }}"
             body: |
@@ -201,6 +200,8 @@ jobs:
               The Boot Image is advisable to be flashed using Odin or Heimdall
               The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition
               The Zip File is a flashable zip for TWRP
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
 
         - name: "Notify Telegram Channel"
