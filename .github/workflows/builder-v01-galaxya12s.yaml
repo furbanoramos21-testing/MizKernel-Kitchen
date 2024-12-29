@@ -33,13 +33,14 @@ on:
         default: "false"
         type: boolean
 
+permissions:
+  contents: write
+
 
 jobs:
   build:
     name: "Build MizKernel"
     runs-on: ubuntu-22.04
-    permissions:
-      contents: write
     steps:
         - name: "Checkout"
           uses: actions/checkout@v2
@@ -191,19 +192,19 @@ jobs:
             name: "MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}"
             tag_name: "${{ github.run_id }}"
             body: |
-              ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}
+              ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}<br>
               ### under version: ${{ steps.set-vars.outputs.IDENTIFIER }}
               
-              The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s
-              Apatch was used? : ${{ github.event.inputs.apatch }}
-              APatch Password: ${{ github.event.inputs.apatch_password }}
+              The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s<br>
+              Apatch was used? : ${{ github.event.inputs.apatch }}<br>
+              APatch Password: ${{ github.event.inputs.apatch_password }}<br>
               (Note that if Apatch is set to true, the kernel is patched with APatch, if false, the kernel is not patched with APatch)
 
-              The Boot Image is advisable to be flashed using Odin or Heimdall
-              The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition
+              The Boot Image is advisable to be flashed using Odin or Heimdall<br>
+              The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition<br>
               The Zip File is a flashable zip for TWRP
           env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+            GITHUB_TOKEN: ${{ secrets.GH_FALLBACK_TOKEN }} 
 
 
         - name: "Notify Telegram Channel"
