@@ -102,7 +102,7 @@ jobs:
             chmod +x kptools-linux
             # The aria2c is for downloading the boot.img from Galaxy A12s, if you want to use your own boot.img, edit the link
             aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-            mv boot.img processing/boot-stock.img
+            mv boot.img processing/boot.img
             aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpimg-android
             sudo mv magiskboot /usr/bin/magiskboot
             sudo mv kptools-linux /usr/bin/kptools-linux
@@ -110,7 +110,7 @@ jobs:
             sudo chmod +x /usr/bin/kptools-linux
             mv kpimg-android processing/kpimg-android
             cd processing
-            magiskboot unpack boot-stock.img
+            magiskboot unpack boot.img
             rm -rf kernel
             kptools-linux -p --image Image-${{github.run_id}} --skey ${{ github.event.inputs.apatch_password }} --kpimg kpimg-android --out kernel
             magiskboot repack boot.img
