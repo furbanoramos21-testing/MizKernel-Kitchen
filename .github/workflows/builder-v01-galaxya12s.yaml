@@ -132,9 +132,9 @@ jobs:
             sudo mv magiskboot /usr/bin/magiskboot
             sudo chmod +x /usr/bin/magiskboot
             aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-            mv boot.img processing/boot-stock.img
+            mv boot.img processing/boot.img
             cd processing
-            magiskboot unpack boot-stock.img
+            magiskboot unpack boot.img
             rm -rf kernel
             cp Image-${{github.run_id}} kernel
             magiskboot repack boot.img
