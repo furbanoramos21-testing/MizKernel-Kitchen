@@ -212,7 +212,10 @@ jobs:
               Upload: ${{ github.event.inputs.uplpad }}
               Release type: ${{ github.event.inputs.version }}
               Apatch Password: ${{ github.event.inputs.apatch_password }}
+              
               If Apatch is set to true, that means the kernel is patched with APatch
               If false, the kernel is not patched with APatch, thus ignore the Apatch Password
               ```
+
+              Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
         
