@@ -158,7 +158,7 @@ jobs:
             mv MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
 
         - name: "To Github Artifact"
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v4
           with:
             name: "MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}"
             path: |
