@@ -1,0 +1,205 @@
+# This is for Building the Android Kernel
+# Builder v0.1 Made for MizKernel
+# Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung
+
+
+name: "Android Kernel Builder - v1 : MizKernel"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "What forked version you want from MizKernel"
+        required: true
+        default: "stable"
+        type: choice
+        options:
+          - "stable"
+          - "unstable"
+          - "testing"
+      apatch:
+        description: "Apply APatch to the Kernel"
+        required: true
+        default: "false"
+        type: boolean
+      apatch_password:
+        description: "Password for APatch, don't forget the password or else you're locked out from root access lol"
+        required: true
+        default: "A12345678"
+        type: string
+      notify_telegram_channel:
+        description: "Notify the Telegram Channel (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
+        required: true
+        default: "false"
+        type: boolean
+
+
+jobs:
+  build:
+    name: "Build MizKernel"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Clean up Bloated Actions"
+        uses: rokibhasansagar/slimhub_actions@main
+        retain: "docker_imgcache,docker_buildkit,container_tools,nodejs_npm,toolcache_node"
+
+      - name: "Set up dependencies"
+        run: |
+          apt update
+          apt upgrade -y
+          apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
+          apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
+          git clone https://github.com/Mizumo-prjkt/clang-r383902
+          git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
+        
+      - name: "Clone the Kernel"
+        run: |
+          git clone https://github.com/MizProject/MizKernel-GalaxyA12s MizKernel
+          cd MizKernel
+          git checkout ${{ github.event.inputs.version }}
+          cd ..
+      
+      - name: "Move the toolchains"
+        run: |
+          mv clang-r383902 MizKernel/clang-r383902
+          mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
+
+      - name: "Build the kernel"
+        run: |
+          MizKernel/build_kernel.sh
+
+      - name: "Pull Finished Kernel"
+        run: |
+
+          mkdir processing
+          cp MizKernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
+          mkdir out
+
+       - name: "Variable fetching"
+        run: |
+        IDENT="$(cat 'MizKernel/IDENTIFIER')"
+        CHANGELOG="$(cat 'MizKernel/CHANGELOG')"
+        echo "::set-output name=IDENTIFIER::$IDENT"
+        echo "::set-output name=CHANGELOG::$CHANGELOG"
+
+      - name: "Patch with APatch"
+        if: ${{ github.event.inputs.apatch == 'true' }}
+        run: |
+          aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
+          chmod +x magiskboot
+          aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kptools-linux
+          chmod +x kptools-linux
+          # The aria2c is for downloading the boot.img from Galaxy A12s, if you want to use your own boot.img, edit the link
+          aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
+          mv boot.img processing/boot-stock.img
+          aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpimg-android
+          sudo mv magiskboot /usr/bin/magiskboot
+          sudo mv kptools-linux /usr/bin/kptools-linux
+          chmod +x /usr/bin/magiskboot
+          chmod +x /usr/bin/kptools-linux
+          mv kpimg-android processing/kpimg-android
+          cd processing
+          magiskboot unpack boot-stock.img
+          rm -rf kernel
+          kptools-linux -p --image Image-${{github.run_id}} --skey ${{ github.event.inputs.apatch_password }} --kpimg kpimg-android --out kernel
+          magiskboot repack boot.img
+          mv new-boot.img ../out/boot-${{github.run_id}}.img 
+          cd ..
+          
+
+      - name: "Patch Boot Img (Non-Apatch)"
+        if: ${{ github.event.inputs.apatch == 'false' }}
+        run: |
+          aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
+          chmod +x magiskboot
+          sudo mv magiskboot /usr/bin/magiskboot
+          chmod +x /usr/bin/magiskboot
+          aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
+          mv boot.img processing/boot-stock.img
+          cd processing
+          magiskboot unpack boot-stock.img
+          rm -rf kernel
+          cp Image-${{github.run_id}} kernel
+          magiskboot repack boot.img
+          mv new-boot.img ../out/boot-${{github.run_id}}.img
+          cd ..
+
+      - name: "Zip it"
+        run: |
+          aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/zi-template/AnyKernel-TEMPLATE.zip
+          unzip AnyKernel-TEMPLATE.zip
+          mv AnyKernel-TEMPLATE AnyKernel
+          rm -rf AnyKernel/Image
+          if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
+            cp processing/kernel AnyKernel/Image
+          else
+            cp processing/kernel AnyKernel/Image
+          fi
+          rm -rf AnyKernel/version
+          if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
+            EXTRMSG=" APatch is applied"
+          fi
+          cat << EOF > AnyKernel/version
+          MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}
+          Autogen by Github Actions
+          $EXTRMSG
+
+          Changelog according to the repo:
+          ${{ steps.set-vars.outputs.CHANGELOG }}
+
+          Link:
+          https://github.com/MizProject/MizKernel-GalaxyA12s
+          EOF
+          zip -r MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip AnyKernel/*
+          mv MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+
+      - name: "To Github Artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: "MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}"
+          path: |
+            out/boot-${{github.run_id}}.img
+            out/Image-${{github.run_id}}
+            out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+        continue-on-error: true
+
+
+
+      - name: "Deploy to Github Release"
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            out/boot-${{github.run_id}}.img
+            out/Image-${{github.run_id}}
+            out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+          release_name: "MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}"
+          tag_name: "${{ github.run_id }}"
+          body: |
+            ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}
+            ### under version: ${{ steps.set-vars.outputs.IDENTIFIER }}
+            
+            The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s
+            Apatch was used? : ${{ github.event.inputs.apatch }}
+
+            The Boot Image is advisable to be flashed using Odin or Heimdall
+            The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition
+            The Zip File is a flashable zip for TWRP
+
+
+      - name: "Notify Telegram Channel"
+        if: ${{ github.event.inputs.notify_telegram_channel == 'true' }}
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ```🚀 MizKernel Build Completed 🚀
+            Version: ${{ steps.set-vars.outputs.IDENTIFIER }}
+            Apatch: ${{ github.event.inputs.apatch }}
+            Upload: ${{ github.event.inputs.uplpad }}
+            Release type: ${{ github.event.inputs.version }}
+            ```
+      
