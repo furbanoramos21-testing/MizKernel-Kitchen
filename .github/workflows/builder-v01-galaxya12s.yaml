@@ -91,14 +91,10 @@ jobs:
 
         - name: "Variable fetching"
           run: |
-            echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG)" >> $GITHUB_ENV
-            echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER)" >> $GITHUB_ENV
-            echo "IDENTIFIER<<EOF" >> $GITHUB_ENV
-            echo "$IDENTIFIER" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-            echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-            echo "$CHANGELOG" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
+            echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG | cat | tr -d '\n\r')" >> $GITHUB_ENV
+            echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER | cat | tr -d '\n\r')" >> $GITHUB_ENV
+            echo "DEBUG IDENT: ${{ steps.set-vars.outputs.IDENTIFIER }}"
+            echo "DEBUG CLOG: ${{ steps.set-vars.outputs.CHANGELOG }}"
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
@@ -162,20 +158,20 @@ jobs:
               EXTRMSG=" APatch is applied"
             fi
             cat << EOF > AnyKernel/version
-            MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}
+            MizKernel - ${{ env.IDENTIFIER }}
             Autogen by Github Actions
             $EXTRMSG
 
             Changelog according to the repo:
-            ${{ steps.set-vars.outputs.CHANGELOG }}
+            ${{ env.CHANGELOG }}
 
             Link:
             https://github.com/MizProject/MizKernel-GalaxyA12s
             EOF
             cd AnyKernel
-            zip -r MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip ./*
+            zip -r MizKernel-${{env.IDENTIFIER}}-twrp.zip ./*
             cd ..
-            mv AnyKernel/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+            mv AnyKernel/MizKernel-${{env.IDENTIFIER}}-twrp.zip out/MizKernel-${{env.IDENTIFIER}}-twrp.zip
           
 
         - name: "To Github Artifact"
@@ -185,7 +181,7 @@ jobs:
             path: |
               out/boot-${{github.run_id}}.img
               out/Image-${{github.run_id}}
-              out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+              out/MizKernel-${{env.IDENTIFIER}}-twrp.zip
           continue-on-error: true
 
 
@@ -195,11 +191,11 @@ jobs:
           with:
             files: |
               out/*
-            name: "MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}"
+            name: "MizKernel - ${{ env.IDENTIFIER }}"
             tag_name: "${{ github.run_id }}"
             body: |
               ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}<br>
-              ### under version: ${{ steps.set-vars.outputs.IDENTIFIER }}
+              ### under version: ${{ env.IDENTIFIER }}
               
               The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s<br>
               Apatch was used? : ${{ github.event.inputs.apatch }}<br>
@@ -221,7 +217,7 @@ jobs:
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
               🚀 MizKernel Build Completed 🚀
-              Version: ${{ steps.set-vars.outputs.IDENTIFIER }}
+              Version: ${{ env.IDENTIFIER }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
               Apatch Password: ${{ github.event.inputs.apatch_password }}
