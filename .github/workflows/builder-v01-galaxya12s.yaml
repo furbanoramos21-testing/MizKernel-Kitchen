@@ -95,6 +95,8 @@ jobs:
             CHANGELOG="$(cat MizKernel/CHANGELOG)"
             echo "IDENTIFIER=$IDENT" >> $GITHUB_ENV
             echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+            echo "DEBUG IDENT: ${{ steps.set-vars.outputs.IDENTIFIER }}"
+            echo "DEBUG CLOG: ${{ steps.set-vars.outputs.CHANGELOG }}"
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
