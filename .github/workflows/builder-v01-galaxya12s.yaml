@@ -138,9 +138,13 @@ jobs:
         - name: "Zip it"
           run: |
             aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/zi-template/AnyKernel-TEMPLATE.zip
+            mkdir AnyKernel
+            mv AnyKernel-TEMPLATE.zip AnyKernel
+            cd AnyKernel
             unzip AnyKernel-TEMPLATE.zip
-            mv AnyKernel-TEMPLATE AnyKernel
+            rm -rf AnyKernel-TEMPLATE.zip
             rm -rf AnyKernel/Image
+            cd ..
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               cp processing/kernel AnyKernel/Image
             else
