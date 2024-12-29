@@ -89,12 +89,14 @@ jobs:
             cp MizKernel/arch/arm64/boot/Image processing/Image-${{github.run_id}}
             mkdir out
 
-        - name: "Variable fetching"
-          run: |
-            echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG | cat | tr -d '\n\r')" >> $GITHUB_ENV
-            echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER | cat | tr -d '\n\r')" >> $GITHUB_ENV
-            echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
-            echo "DEBUG CLOG: ${{ env.CHANGELOG }}"
+        # Variable fetching is disabled because it's not working
+
+        # - name: "Variable fetching"
+        #   run: |
+        #     echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG | cat | tr -d '\n\r')" >> $GITHUB_ENV
+        #     echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER | cat | tr -d '\n\r')" >> $GITHUB_ENV
+        #     echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
+        #     echo "DEBUG CLOG: ${{ env.CHANGELOG }}"
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
@@ -118,6 +120,7 @@ jobs:
             kptools-linux -p --image Image-${{github.run_id}} --skey ${{ github.event.inputs.apatch_password }} --kpimg kpimg-android --out kernel
             magiskboot repack boot.img
             mv new-boot.img ../out/boot.img 
+            mv kernel ../out/Image
             cd ..
             
 
@@ -157,32 +160,26 @@ jobs:
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               EXTRMSG=" APatch is applied"
             fi
-            cat << EOF > AnyKernel/version
-            MizKernel - '${{ env.IDENTIFIER }}'
-            Autogen by Github Actions
-            $EXTRMSG
-
-            Changelog according to the repo:
-            "${{ env.CHANGELOG }}"
-
-            Link:
-            https://github.com/MizProject/MizKernel-GalaxyA12s
-            EOF
+            echo "MizKernel-${{github.run_id}}" - Type: ${{github.event.inputs.version}} >> AnyKernel/version
+            echo "Autogen by Github Actions" >> AnyKernel/version
+            echo "Build Date: $(date)" >> AnyKernel/version
+            echo "See the changelog for more info" >> AnyKernel/version
+            echo "Link: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG" >> AnyKernel/version
 
             cd AnyKernel
-            zip -r MizKernel-${{env.IDENTIFIER}}-twrp.zip ./*
+            zip -r MizKernel-${{github.run_id}}-twrp.zip ./*
             cd ..
-            mv AnyKernel/MizKernel-${{env.IDENTIFIER}}-twrp.zip out/MizKernel-${{env.IDENTIFIER}}-twrp.zip
+            mv AnyKernel/MizKernel-${{github.run_id}}-twrp.zip out/MizKernel-${{github.run_id}}-twrp.zip
           
 
         - name: "To Github Artifact"
           uses: actions/upload-artifact@v4
           with:
-            name: "MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}"
+            name: "MizKernel-${{github.run_id}}-artifacts"
             path: |
-              out/boot-${{github.run_id}}.img
-              out/Image-${{github.run_id}}
-              out/MizKernel-${{env.IDENTIFIER}}-twrp.zip
+              out/boot.img
+              out/Image
+              out/MizKernel-${{github.run_id}}-twrp.zip
           continue-on-error: true
 
 
@@ -196,7 +193,6 @@ jobs:
             tag_name: "${{ github.run_id }}"
             body: |
               ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}<br>
-              ### under version: ${{ env.IDENTIFIER }}
               
               The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s<br>
               Apatch was used? : ${{ github.event.inputs.apatch }}<br>
@@ -218,13 +214,15 @@ jobs:
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
               🚀 MizKernel Build Completed 🚀
-              Version: ${{ env.IDENTIFIER }}
+              Action ID: ${{ github.run_id }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
               Apatch Password: ${{ github.event.inputs.apatch_password }}
               
               If Apatch is set to true, that means the kernel is patched with APatch
               If false, the kernel is not patched with APatch, thus ignore the Apatch Password
+
+              For A12s using APatch already, i suggest using the zip variant instead, no need to reflash boot partition.
               
 
               Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
