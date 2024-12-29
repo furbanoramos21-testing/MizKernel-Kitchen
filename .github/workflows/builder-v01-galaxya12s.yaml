@@ -120,7 +120,7 @@ jobs:
             kptools-linux -p --image Image-${{github.run_id}} --skey ${{ github.event.inputs.apatch_password }} --kpimg kpimg-android --out kernel
             magiskboot repack boot.img
             mv new-boot.img ../out/boot.img 
-            mv kernel ../out/Image
+            cp -rf kernel ../out/Image
             cd ..
             
 
