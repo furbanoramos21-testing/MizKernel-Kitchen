@@ -93,8 +93,8 @@ jobs:
           run: |
             echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG | cat | tr -d '\n\r')" >> $GITHUB_ENV
             echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER | cat | tr -d '\n\r')" >> $GITHUB_ENV
-            echo "DEBUG IDENT: ${{ steps.set-vars.outputs.IDENTIFIER }}"
-            echo "DEBUG CLOG: ${{ steps.set-vars.outputs.CHANGELOG }}"
+            echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
+            echo "DEBUG CLOG: ${{ rnv..CHANGELOG }}"
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
@@ -158,16 +158,17 @@ jobs:
               EXTRMSG=" APatch is applied"
             fi
             cat << EOF > AnyKernel/version
-            MizKernel - ${{ env.IDENTIFIER }}
+            MizKernel - '${{ env.IDENTIFIER }}'
             Autogen by Github Actions
             $EXTRMSG
 
             Changelog according to the repo:
-            ${{ env.CHANGELOG }}
+            "${{ env.CHANGELOG }}"
 
             Link:
             https://github.com/MizProject/MizKernel-GalaxyA12s
             EOF
+
             cd AnyKernel
             zip -r MizKernel-${{env.IDENTIFIER}}-twrp.zip ./*
             cd ..
