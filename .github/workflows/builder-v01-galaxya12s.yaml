@@ -42,6 +42,11 @@ jobs:
         - name: "Checkout"
           uses: actions/checkout@v2
 
+        - name: "Set up Timezone"
+          run: |
+            # Only set time to Asia/Manila and NEVER ANY TZ
+            sudo timedatectl set-timezone Asia/Manila
+
         - name: "Clean up Bloated Actions"
           uses: rokibhasansagar/slimhub_actions@main
           with:
