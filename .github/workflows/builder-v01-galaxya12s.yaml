@@ -94,7 +94,7 @@ jobs:
             echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG | cat | tr -d '\n\r')" >> $GITHUB_ENV
             echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER | cat | tr -d '\n\r')" >> $GITHUB_ENV
             echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
-            echo "DEBUG CLOG: ${{ rnv..CHANGELOG }}"
+            echo "DEBUG CLOG: ${{ env..CHANGELOG }}"
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
