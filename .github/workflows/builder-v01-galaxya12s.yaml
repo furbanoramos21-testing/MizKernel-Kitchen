@@ -170,8 +170,10 @@ jobs:
             Link:
             https://github.com/MizProject/MizKernel-GalaxyA12s
             EOF
-            zip -r MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip AnyKernel/*
-            mv MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
+            cd AnyKernel
+            zip -r MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip ./*
+            cd ..
+            mv AnyKernel/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip out/MizKernel-${{steps.set-vars.outputs.IDENTIFIER}}-twrp.zip
           
 
         - name: "To Github Artifact"
