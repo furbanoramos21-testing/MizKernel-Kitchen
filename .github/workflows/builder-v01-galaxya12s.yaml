@@ -91,10 +91,8 @@ jobs:
 
         - name: "Variable fetching"
           run: |
-            IDENT="$(cat MizKernel/IDENTIFIER)"
-            CHANGELOG="$(cat MizKernel/CHANGELOG)"
-            echo "IDENTIFIER=$IDENT" >> $GITHUB_ENV
-            echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+            echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG)" >> $GITHUB_ENV
+            echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER)" >> $GITHUB_ENV
             echo "DEBUG IDENT: ${{ steps.set-vars.outputs.IDENTIFIER }}"
             echo "DEBUG CLOG: ${{ steps.set-vars.outputs.CHANGELOG }}"
 
