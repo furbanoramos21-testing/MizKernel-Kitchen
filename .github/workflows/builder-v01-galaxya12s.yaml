@@ -104,8 +104,8 @@ jobs:
             aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpimg-android
             sudo mv magiskboot /usr/bin/magiskboot
             sudo mv kptools-linux /usr/bin/kptools-linux
-            chmod +x /usr/bin/magiskboot
-            chmod +x /usr/bin/kptools-linux
+            sudo chmod +x /usr/bin/magiskboot
+            sudo chmod +x /usr/bin/kptools-linux
             mv kpimg-android processing/kpimg-android
             cd processing
             magiskboot unpack boot-stock.img
@@ -122,7 +122,7 @@ jobs:
             aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
             chmod +x magiskboot
             sudo mv magiskboot /usr/bin/magiskboot
-            chmod +x /usr/bin/magiskboot
+            sudo chmod +x /usr/bin/magiskboot
             aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
             mv boot.img processing/boot-stock.img
             cd processing
