@@ -186,7 +186,7 @@ jobs:
           with:
             files: |
               out/*
-            release_name: "MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}"
+            name: "MizKernel - ${{ steps.set-vars.outputs.IDENTIFIER }}"
             tag_name: "${{ github.run_id }}"
             body: |
               ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}
