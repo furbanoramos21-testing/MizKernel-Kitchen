@@ -83,7 +83,7 @@ jobs:
           run: |
 
             mkdir processing
-            cp MizKernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
+            cp MizKernel/arch/arm64/boot/Image processing/Image-${{github.run_id}}
             mkdir out
 
         - name: "Variable fetching"
