@@ -189,7 +189,7 @@ jobs:
           with:
             files: |
               out/*
-            name: "MizKernel - ${{ env.IDENTIFIER }}"
+            name: "MizKernel - ${{github.run_id}} - ${{ github.event.inputs.version }}"
             tag_name: "${{ github.run_id }}"
             body: |
               ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}<br>
