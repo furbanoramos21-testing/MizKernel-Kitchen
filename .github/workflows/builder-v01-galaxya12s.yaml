@@ -75,7 +75,8 @@ jobs:
 
         - name: "Build the kernel"
           run: |
-            MizKernel/build_kernel.sh
+            cd MizKernel
+            ./build_kernel.sh
 
         - name: "Pull Finished Kernel"
           run: |
