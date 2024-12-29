@@ -91,10 +91,10 @@ jobs:
 
         - name: "Variable fetching"
           run: |
-            IDENT="$(cat 'MizKernel/IDENTIFIER')"
-            CHANGELOG="$(cat 'MizKernel/CHANGELOG')"
-            echo "::set-output name=IDENTIFIER::$IDENT"
-            echo "::set-output name=CHANGELOG::$CHANGELOG"
+            IDENT="$(cat MizKernel/IDENTIFIER)"
+            CHANGELOG="$(cat MizKernel/CHANGELOG)"
+            echo "IDENTIFIER=$IDENT" >> $GITHUB_ENV
+            echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
@@ -214,16 +214,15 @@ jobs:
             to: ${{ secrets.TELEGRAM_CHAT_ID }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
-              ```🚀 MizKernel Build Completed 🚀
+              🚀 MizKernel Build Completed 🚀
               Version: ${{ steps.set-vars.outputs.IDENTIFIER }}
               Apatch: ${{ github.event.inputs.apatch }}
-              Upload: ${{ github.event.inputs.uplpad }}
               Release type: ${{ github.event.inputs.version }}
               Apatch Password: ${{ github.event.inputs.apatch_password }}
               
               If Apatch is set to true, that means the kernel is patched with APatch
               If false, the kernel is not patched with APatch, thus ignore the Apatch Password
-              ```
+              
 
               Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
         
