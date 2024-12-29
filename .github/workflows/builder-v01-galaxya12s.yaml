@@ -80,10 +80,10 @@ jobs:
 
         - name: "Variable fetching"
           run: |
-          IDENT="$(cat 'MizKernel/IDENTIFIER')"
-          CHANGELOG="$(cat 'MizKernel/CHANGELOG')"
-          echo "::set-output name=IDENTIFIER::$IDENT"
-          echo "::set-output name=CHANGELOG::$CHANGELOG"
+            IDENT="$(cat 'MizKernel/IDENTIFIER')"
+            CHANGELOG="$(cat 'MizKernel/CHANGELOG')"
+            echo "::set-output name=IDENTIFIER::$IDENT"
+            echo "::set-output name=CHANGELOG::$CHANGELOG"
 
         - name: "Patch with APatch"
           if: ${{ github.event.inputs.apatch == 'true' }}
