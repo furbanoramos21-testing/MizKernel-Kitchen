@@ -184,6 +184,8 @@ jobs:
               
               The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s
               Apatch was used? : ${{ github.event.inputs.apatch }}
+              APatch Password: ${{ github.event.inputs.apatch_password }}
+              (Note that if Apatch is set to true, the kernel is patched with APatch, if false, the kernel is not patched with APatch)
 
               The Boot Image is advisable to be flashed using Odin or Heimdall
               The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition
@@ -202,5 +204,8 @@ jobs:
               Apatch: ${{ github.event.inputs.apatch }}
               Upload: ${{ github.event.inputs.uplpad }}
               Release type: ${{ github.event.inputs.version }}
+              Apatch Password: ${{ github.event.inputs.apatch_password }}
+              If Apatch is set to true, that means the kernel is patched with APatch
+              If false, the kernel is not patched with APatch, thus ignore the Apatch Password
               ```
         
