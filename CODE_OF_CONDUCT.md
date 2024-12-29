@@ -2,7 +2,7 @@
 
 ## Transperancy
 
-Kernels that will be used for compilation here only allows for MizProject's kernel. This measure is taken to ensure that the kernel used is the same as the one used in the development environment.
+Kernels that will be used for compilation here only allows for MizProject's kernel. This measure is taken to ensure that the kernel used is only the ones that MizProject works on
 
 The kernel should be public-as-is and should no longer be restrictive, unlike the Previous v1 MizKernel works
 
