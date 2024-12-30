@@ -16,4 +16,5 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_EXYNOS_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        message: "Test msg"
+        message: "Hello, i'm Emu Otori, Emu is meaning SMIIIILEEE!!!! (this is a test message)"
+        photo: "__debug/its-emu-otori.jpeg"
