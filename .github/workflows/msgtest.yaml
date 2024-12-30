@@ -1,0 +1,19 @@
+name: Test msg
+
+on:
+  workflow_dispatch:
+    
+
+jobs:
+  build:
+    name: Test msg
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Telegram msg
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_EXYNOS_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        message: "Test msg"
