@@ -32,6 +32,11 @@ on:
         required: true
         default: "false"
         type: boolean
+      use_uc_boot_template:
+        description: "Use the UC Boot Template (Circumvents the new Device Tree Blob Limit of Overclocking and Underclocking on UD)"
+        required: true
+        default: "true"
+        type: boolean
 
 permissions:
   contents: write
@@ -113,8 +118,13 @@ jobs:
             aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kptools-linux
             chmod +x kptools-linux
             # The aria2c is for downloading the boot.img from Galaxy A12s, if you want to use your own boot.img, edit the link
-            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-            mv boot.img processing/boot.img
+            if [ ${{ github.event.inputs.use_uc_boot_template }} == 'true' ]; then
+              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot-uc.img
+              mv boot-uc.img processing/boot.img
+            else
+              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
+              mv boot.img processing/boot.img
+            fi
             aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpimg-android
             sudo mv magiskboot /usr/bin/magiskboot
             sudo mv kptools-linux /usr/bin/kptools-linux
@@ -138,8 +148,13 @@ jobs:
             chmod +x magiskboot
             sudo mv magiskboot /usr/bin/magiskboot
             sudo chmod +x /usr/bin/magiskboot
-            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-            mv boot.img processing/boot.img
+            if [ ${{ github.event.inputs.use_uc_boot_template }} == 'true' ]; then
+              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot-uc.img
+              mv boot-uc.img processing/boot.img
+            else
+              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
+              mv boot.img processing/boot.img
+            fi
             cd processing
             magiskboot unpack boot.img
             rm -rf kernel
