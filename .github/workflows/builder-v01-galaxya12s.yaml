@@ -33,7 +33,7 @@ on:
         default: "false"
         type: boolean
       use_uc_boot_template:
-        description: "Use the UC Boot Template (Circumvents the new Device Tree Blob Limit of Overclocking and Underclocking on UD)"
+        description: "Use the UC Boot Template"
         required: true
         default: "true"
         type: boolean
