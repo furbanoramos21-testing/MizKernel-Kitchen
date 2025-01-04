@@ -161,6 +161,7 @@ jobs:
             cp Image-${{github.run_id}} kernel
             magiskboot repack boot.img
             mv new-boot.img ../out/boot.img
+            cp -rf kernel ../out/Image
             cd ..
 
         - name: "Zip it"
