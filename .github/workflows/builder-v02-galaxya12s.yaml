@@ -146,7 +146,7 @@ jobs:
             
 
         - name: "Patch Boot Img (Non-Apatch)"
-          if: ${{ github.event.inputs.apatch == 'false' }}
+          if: ${{ github.event.inputs.apatch == 'false' || github.event.inputs.version == 'unstable_ksu' }}
           run: |
             aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
             chmod +x magiskboot
