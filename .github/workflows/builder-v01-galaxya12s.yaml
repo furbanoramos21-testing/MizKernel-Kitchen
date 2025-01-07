@@ -20,7 +20,7 @@ on:
       apatch:
         description: "Apply APatch to the Kernel"
         required: true
-        default: "false"
+        default: false
         type: boolean
       apatch_password:
         description: "Password for APatch, don't forget the password or else you're locked out from root access lol"
@@ -30,12 +30,12 @@ on:
       notify_telegram_channel:
         description: "Notify the Telegram Channel (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
         required: true
-        default: "false"
+        default: false
         type: boolean
       use_uc_boot_template:
         description: "Use the UC Boot Template"
         required: true
-        default: "true"
+        default: true
         type: boolean
 
 permissions:
