@@ -17,6 +17,7 @@ on:
           - "stable"
           - "unstable"
           - "testing"
+          - "unstable_ksu"
       apatch:
         description: "Apply APatch to the Kernel"
         required: true
@@ -66,8 +67,6 @@ jobs:
             sudo apt upgrade -y
             sudo apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
             sudo apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
-            git clone https://github.com/Mizumo-prjkt/clang-r383902
-            git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
           
         - name: "Clone the Kernel"
           run: |
@@ -76,8 +75,13 @@ jobs:
             git checkout ${{ github.event.inputs.version }}
             cd ..
         
+        # Deprecate the toolchains later since it should be the script that handles the toolchain handling now (using submodules)
+        # At this variant, the unstable_ksu has already have a better toolchain handling
         - name: "Move the toolchains"
+          if: ${{ github.event.inputs.version != 'unstable_ksu' }}
           run: |
+            git clone https://github.com/Mizumo-prjkt/clang-r383902
+            git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
             mv clang-r383902 MizKernel/clang-r383902
             mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
 
@@ -110,8 +114,8 @@ jobs:
         #     echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
         #     echo "DEBUG CLOG: ${{ env.CHANGELOG }}"
 
-        - name: "Patch with APatch"
-          if: ${{ github.event.inputs.apatch == 'true' }}
+        - name: "Patch with APatch (Make sure KSU fork is not selected)"
+          if: ${{ github.event.inputs.apatch == 'true' && github.event.inputs.version != 'unstable_ksu' }}
           run: |
             aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
             chmod +x magiskboot
