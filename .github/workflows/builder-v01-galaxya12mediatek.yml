@@ -68,20 +68,21 @@ jobs:
           
         - name: "Clone the Kernel"
           run: |
-            git clone https://github.com/MizProject/MizKernel-GalaxyA12s MizKernel
+            git clone https://github.com/MizProject/MizKernel-GalaxyA125F MizKernel
             cd MizKernel
             git checkout ${{ github.event.inputs.version }}
             cd ..
         
         # Deprecate the toolchains later since it should be the script that handles the toolchain handling now (using submodules)
         # At this variant, the unstable_ksu has already have a better toolchain handling
-        - name: "Move the toolchains"
-          if: ${{ github.event.inputs.version != 'unstable_ksu' }}
-          run: |
-            git clone https://github.com/Mizumo-prjkt/clang-r383902
-            git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
-            mv clang-r383902 MizKernel/clang-r383902
-            mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
+        # ON LATER ITERATIONS, REMOVE THIS CODE
+        # - name: "Move the toolchains"
+        #   if: ${{ github.event.inputs.version != 'unstable_ksu' }}
+        #   run: |
+        #     git clone https://github.com/Mizumo-prjkt/clang-r383902
+        #     git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
+        #     mv clang-r383902 MizKernel/clang-r383902
+        #     mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
 
         - name: "Build the kernel"
           run: |
@@ -101,6 +102,7 @@ jobs:
             echo "Pulling Image-gzdtb"
             echo "If this session fails, either, it's not config in defconfig or idk where, probably in the shadow realm"
             cp MizKernel/arch/arm64/boot/Image.gz-dtb out/Image.gz-dtb
+            cp MizKernel/out/arch/arm64/boot/Image.gz-dtb out/Image.gz-dtb
           continue-on-error: true
 
         # Variable fetching is disabled because it's not working
