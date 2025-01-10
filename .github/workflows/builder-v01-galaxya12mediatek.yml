@@ -178,13 +178,14 @@ jobs:
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               EXTRMSG=" APatch is applied, Pass: ${{github.event.inputs.apatch_password}}"
             fi
-            echo "\n==================\n" >> AnyKernel/version
+            echo "==================" >> AnyKernel/version
             figlet -f small "MizKernel" >> AnyKernel/version
             echo "Galaxy A12 (MTK)" >> AnyKernel/version
             echo "MizKernel-${{github.run_id}}" - Type: ${{github.event.inputs.version}} >> AnyKernel/version
             echo "Autogen by Github Actions" >> AnyKernel/version
             echo "Build Date: $(date)" >> AnyKernel/version
             echo "$EXTRMSG" >> AnyKernel/version
+            echo "===================" >> AnyKernel/version
             
 
             cd AnyKernel
