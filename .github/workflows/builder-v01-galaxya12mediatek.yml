@@ -1,9 +1,9 @@
 # This is for Building the Android Kernel
-# Builder v0.2 Made for MizKernel 
+# Builder v0.1 Made for MizKernel A125F
 # Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung (at least on a12s exynos)
 
 
-name: "Android Kernel Builder - v2 : MizKernel for A12 (Mediatek)"
+name: "Android Kernel Builder - v1 : MizKernel for A12 (Mediatek)"
 
 on:
   workflow_dispatch:
