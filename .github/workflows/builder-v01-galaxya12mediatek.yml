@@ -265,7 +265,7 @@ jobs:
               If Apatch is set to "true", that means the kernel is patched with APatch
               If "false", the kernel is not patched with APatch, thus ignore the Apatch Password
 
-              For A12s using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
+              For A125 MTK using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
               
 
               Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
