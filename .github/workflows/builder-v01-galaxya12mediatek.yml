@@ -182,8 +182,7 @@ jobs:
             echo "MizKernel-${{github.run_id}}" - Type: ${{github.event.inputs.version}} >> AnyKernel/version
             echo "Autogen by Github Actions" >> AnyKernel/version
             echo "Build Date: $(date)" >> AnyKernel/version
-            echo "See the changelog for more info" >> AnyKernel/version
-            echo "Link: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG" >> AnyKernel/version
+            
 
             cd AnyKernel
             zip -r MizKernel-${{github.run_id}}-twrp.zip ./*
@@ -252,7 +251,7 @@ jobs:
           if: ${{ github.event.inputs.notify_telegram_channel == 'true' }}
           uses: appleboy/telegram-action@master
           with:
-            to: ${{ secrets.TELEGRAM_EXYNOS_CHAT_ID }}
+            to: ${{ secrets.TELEGRAM_A125F_MTK_TOKEN }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
               🚀 MizKernel Build Completed for Galaxy A12 (MTK)🚀
