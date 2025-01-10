@@ -1,23 +1,24 @@
 # This is for Building the Android Kernel
-# Builder v0.2 Made for MizKernel
-# Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung
+# Builder v0.2 Made for MizKernel 
+# Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung (at least on a12s exynos)
 
 
-name: "Android Kernel Builder - v2 : MizKernel"
+name: "Android Kernel Builder - v2 : MizKernel for A12 (Mediatek)"
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "What forked version you want from MizKernel"
+        description: "What forked version you want from MizKernel Galaxy A12 (Mediatek)"
         required: true
         default: "stable"
         type: choice
         options:
           - "stable"
-          - "unstable"
-          - "testing"
-          - "unstable_ksu"
+        # Options are unavailable for now
+        #   - "unstable"
+        #   - "testing"
+        #   - "unstable_ksu"
       apatch:
         description: "Apply APatch to the Kernel"
         required: true
@@ -33,11 +34,7 @@ on:
         required: true
         default: false
         type: boolean
-      use_uc_boot_template:
-        description: "Use the UC Boot Template"
-        required: true
-        default: true
-        type: boolean
+
 
 permissions:
   contents: write
@@ -66,7 +63,7 @@ jobs:
           run: |
             sudo apt update
             sudo apt upgrade -y
-            sudo apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
+            sudo apt install aria2 figlet libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
             sudo apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
           
         - name: "Clone the Kernel"
@@ -122,14 +119,9 @@ jobs:
             chmod +x magiskboot
             aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kptools-linux
             chmod +x kptools-linux
-            # The aria2c is for downloading the boot.img from Galaxy A12s, if you want to use your own boot.img, edit the link
-            if [ ${{ github.event.inputs.use_uc_boot_template }} == 'true' ]; then
-              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot-uc.img
-              mv boot-uc.img processing/boot.img
-            else
-              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-              mv boot.img processing/boot.img
-            fi
+            # The aria2c is for downloading the boot.img from Galaxy A12, if you want to use your own boot.img, edit the link
+            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA125F/releases/download/init/boot.img
+            mv boot.img processing/boot.img
             aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpimg-android
             sudo mv magiskboot /usr/bin/magiskboot
             sudo mv kptools-linux /usr/bin/kptools-linux
@@ -153,13 +145,8 @@ jobs:
             chmod +x magiskboot
             sudo mv magiskboot /usr/bin/magiskboot
             sudo chmod +x /usr/bin/magiskboot
-            if [ ${{ github.event.inputs.use_uc_boot_template }} == 'true' ]; then
-              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot-uc.img
-              mv boot-uc.img processing/boot.img
-            else
-              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-              mv boot.img processing/boot.img
-            fi
+            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA125F/releases/download/init/boot.img
+            mv boot.img processing/boot.img
             cd processing
             magiskboot unpack boot.img
             rm -rf kernel
@@ -179,6 +166,7 @@ jobs:
             rm -rf AnyKernel-TEMPLATE.zip
             rm -rf Image
             cd ..
+            # Why did i made this
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               cp processing/kernel AnyKernel/Image
             else
@@ -188,6 +176,9 @@ jobs:
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               EXTRMSG=" APatch is applied"
             fi
+            echo "\n==================\n" >> AnyKernel/version
+            figlet -f small "MizKernel" >> AnyKernel/version
+            echo "Galaxy A12 (MTK)" >> AnyKernel/version
             echo "MizKernel-${{github.run_id}}" - Type: ${{github.event.inputs.version}} >> AnyKernel/version
             echo "Autogen by Github Actions" >> AnyKernel/version
             echo "Build Date: $(date)" >> AnyKernel/version
@@ -222,16 +213,14 @@ jobs:
             body: |
               ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}<br>
               
-              The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s<br>
+              The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA125F<br>
               Apatch was used? : ${{ github.event.inputs.apatch }}<br>
               APatch Password: ${{ github.event.inputs.apatch_password }}<br>
               (Note that if Apatch is set to true, the kernel is patched with APatch, if false, the kernel is not patched with APatch)
 
               The Boot Image is advisable to be flashed using Odin or Heimdall<br>
               The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition<br>
-              The Zip File is a flashable zip for TWRP
-
-              Changelog: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{ github.event.inputs.version }}/CHANGELOG
+              The Zip File is a flashable zip for TWRP 
           env:
             GITHUB_TOKEN: ${{ secrets.GH_FALLBACK_TOKEN }} 
 
@@ -243,7 +232,7 @@ jobs:
             to: ${{ secrets.TELEGRAM_CHAT_ID }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
-              🚀 MizKernel Build Completed 🚀
+              🚀 MizKernel Build Completed for A125F MTK🚀
               Action ID: ${{ github.run_id }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
@@ -252,21 +241,21 @@ jobs:
               If Apatch is set to true, that means the kernel is patched with APatch
               If false, the kernel is not patched with APatch, thus ignore the Apatch Password
 
-              For A12s using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
+              For A125 MTK using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
               
 
               Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
 
-              Changelog: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{ github.event.inputs.version }}/CHANGELOG
+              Ask for Mizumo_prjkt what Binary is it (Pretty sure as of building, its S6/U6)
 
-        - name: "Notify Telegram Channel - Exynos 850 Chat"
+        - name: "Notify Telegram Channel - Galaxy A125F MTK"
           if: ${{ github.event.inputs.notify_telegram_channel == 'true' }}
           uses: appleboy/telegram-action@master
           with:
             to: ${{ secrets.TELEGRAM_EXYNOS_CHAT_ID }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
-              🚀 MizKernel Build Completed 🚀
+              🚀 MizKernel Build Completed for Galaxy A12 (MTK)🚀
               Action ID: ${{ github.run_id }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
@@ -279,4 +268,6 @@ jobs:
               
 
               Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
+
+              Ask for Mizumo_prjkt what Binary is it (Pretty sure as of building, its S6/U6)
 
