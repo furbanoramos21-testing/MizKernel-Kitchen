@@ -160,12 +160,12 @@ jobs:
 
         - name: "Zip it"
           run: |
-            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/zi-template/AnyKernel-TEMPLATE.zip
+            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA125F/releases/download/init/AK.zip
             mkdir AnyKernel
-            mv AnyKernel-TEMPLATE.zip AnyKernel
+            mv AK.zip AnyKernel
             cd AnyKernel
-            unzip AnyKernel-TEMPLATE.zip
-            rm -rf AnyKernel-TEMPLATE.zip
+            unzip AK.zip
+            rm -rf AK.zip
             rm -rf Image
             cd ..
             # Why did i made this
@@ -176,7 +176,7 @@ jobs:
             fi
             rm -rf AnyKernel/version
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
-              EXTRMSG=" APatch is applied"
+              EXTRMSG=" APatch is applied, Pass: ${{github.event.inputs.apatch_password}}"
             fi
             echo "\n==================\n" >> AnyKernel/version
             figlet -f small "MizKernel" >> AnyKernel/version
@@ -184,6 +184,7 @@ jobs:
             echo "MizKernel-${{github.run_id}}" - Type: ${{github.event.inputs.version}} >> AnyKernel/version
             echo "Autogen by Github Actions" >> AnyKernel/version
             echo "Build Date: $(date)" >> AnyKernel/version
+            echo "$EXTRMSG" >> AnyKernel/version
             
 
             cd AnyKernel
