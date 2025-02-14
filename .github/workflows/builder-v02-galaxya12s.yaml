@@ -29,7 +29,7 @@ on:
         default: "A12345678"
         type: string
       notify_telegram_channel:
-        description: "Notify the Telegram Channel (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
+        description: "Notify the Telegram Bot (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
         required: true
         default: false
         type: boolean
@@ -243,7 +243,7 @@ jobs:
             to: ${{ secrets.TELEGRAM_CHAT_ID }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
-              🚀 MizKernel Build Completed 🚀
+              Build Completed 
               Action ID: ${{ github.run_id }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
@@ -259,24 +259,4 @@ jobs:
 
               Changelog: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{ github.event.inputs.version }}/CHANGELOG
 
-        - name: "Notify Telegram Channel - Exynos 850 Chat"
-          if: ${{ github.event.inputs.notify_telegram_channel == 'true' }}
-          uses: appleboy/telegram-action@master
-          with:
-            to: ${{ secrets.TELEGRAM_EXYNOS_CHAT_ID }}
-            token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-            message: |
-              🚀 MizKernel Build Completed 🚀
-              Action ID: ${{ github.run_id }}
-              Apatch: ${{ github.event.inputs.apatch }}
-              Release type: ${{ github.event.inputs.version }}
-              Apatch Password: ${{ github.event.inputs.apatch_password }}
-              
-              If Apatch is set to true, that means the kernel is patched with APatch
-              If false, the kernel is not patched with APatch, thus ignore the Apatch Password
-
-              For A12s using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
-              
-
-              Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
-
+        
