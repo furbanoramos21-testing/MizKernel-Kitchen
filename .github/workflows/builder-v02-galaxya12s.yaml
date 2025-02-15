@@ -71,7 +71,7 @@ jobs:
           
         - name: "Clone the Kernel"
           run: |
-            git clone https://github.com/MizProject/MizKernel-GalaxyA12s MizKernel
+            git clone https://github.com/furbanoramos21-testing/kernel-GalaxyA127 MizKernel
             cd MizKernel
             git checkout ${{ github.event.inputs.version }}
             cd ..
