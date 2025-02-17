@@ -71,10 +71,7 @@ jobs:
           
         - name: "Clone the Kernel"
           run: |
-            git clone https://github.com/furbanoramos21-testing/kernel-GalaxyA127 MizKernel
-            cd MizKernel
-            git checkout ${{ github.event.inputs.version }}
-            cd ..
+            git clone https://github.com/rsuntk/kernel_samsung_universal3830 MizKernel
         
         # Deprecate the toolchains later since it should be the script that handles the toolchain handling now (using submodules)
         # At this variant, the unstable_ksu has already have a better toolchain handling
