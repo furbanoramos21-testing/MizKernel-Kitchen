@@ -11,7 +11,7 @@ on:
       version:
         description: "What forked version you want from MizKernel"
         required: true
-        default: "stable"
+        default: "unstable_ksu"
         type: choice
         options:
           - "stable"
@@ -31,7 +31,7 @@ on:
       notify_telegram_channel:
         description: "Notify the Telegram Bot (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
         required: true
-        default: false
+        default: true
         type: boolean
       use_uc_boot_template:
         description: "Use the UC Boot Template"
@@ -45,7 +45,7 @@ permissions:
 
 jobs:
   build:
-    name: "Build MizKernel"
+    name: "Build Kernel"
     runs-on: ubuntu-22.04
     steps:
         - name: "Checkout"
