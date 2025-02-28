@@ -216,18 +216,7 @@ jobs:
             name: "MizKernel - ${{github.run_id}} - ${{ github.event.inputs.version }}"
             tag_name: "${{ github.run_id }}"
             body: |
-              ### This is latest build of MizKernel under type: ${{ github.event.inputs.version }}<br>
-              
-              The source code kernel is available at: https://github.com/MizProject/MizKernel-GalaxyA12s<br>
-              Apatch was used? : ${{ github.event.inputs.apatch }}<br>
-              APatch Password: ${{ github.event.inputs.apatch_password }}<br>
-              (Note that if Apatch is set to true, the kernel is patched with APatch, if false, the kernel is not patched with APatch)
-
-              The Boot Image is advisable to be flashed using Odin or Heimdall<br>
-              The Kernel Image is a raw kernel, you can install it using dd via twrp if you know where to put the kernel in the partition<br>
-              The Zip File is a flashable zip for TWRP
-
-              Changelog: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{ github.event.inputs.version }}/CHANGELOG
+              ### This is a test kernel built by github actions ###
           env:
             GITHUB_TOKEN: ${{ secrets.GH_FALLBACK_TOKEN }} 
 
@@ -239,7 +228,7 @@ jobs:
             to: ${{ secrets.TELEGRAM_CHAT_ID }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
-              🚀 MizKernel Build Completed 🚀
+              🚀 Kernel Build Completed 🚀
               Action ID: ${{ github.run_id }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
@@ -255,24 +244,4 @@ jobs:
 
               Changelog: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{ github.event.inputs.version }}/CHANGELOG
 
-        - name: "Notify Telegram Channel - Exynos 850 Chat"
-          if: ${{ github.event.inputs.notify_telegram_channel == 'true' }}
-          uses: appleboy/telegram-action@master
-          with:
-            to: ${{ secrets.TELEGRAM_EXYNOS_CHAT_ID }}
-            token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-            message: |
-              🚀 MizKernel Build Completed 🚀
-              Action ID: ${{ github.run_id }}
-              Apatch: ${{ github.event.inputs.apatch }}
-              Release type: ${{ github.event.inputs.version }}
-              Apatch Password: ${{ github.event.inputs.apatch_password }}
-              
-              If Apatch is set to true, that means the kernel is patched with APatch
-              If false, the kernel is not patched with APatch, thus ignore the Apatch Password
-
-              For A12s using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
-              
-
-              Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
-
+     
