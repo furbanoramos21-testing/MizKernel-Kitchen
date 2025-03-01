@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "What forked version you want from MizKernel"
+        description: "What branch you want from kernel"
         required: true
         default: "master"
         type: choice
@@ -26,16 +26,17 @@ on:
           - "a21snsxx"
           - "a12s"
           - "m12"
-      apatch:
-        description: "Apply APatch to the Kernel"
-        required: true
-        default: false
-        type: boolean
-      apatch_password:
-        description: "Password for APatch, don't forget the password or else you're locked out from root access lol"
-        required: true
-        default: "A12345678"
-        type: string
+      # delete apatch for now
+      # apatch:
+       #  description: "Apply APatch to the Kernel"
+       # required: true
+       # default: false
+       # type: boolean
+      # apatch_password:
+       # description: "Password for APatch, don't forget the password or else you're locked out from root access lol"
+       # required: true
+       # default: "A12345678"
+       # type: string
       notify_telegram_channel:
         description: "Notify the Telegram Channel (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
         required: true
