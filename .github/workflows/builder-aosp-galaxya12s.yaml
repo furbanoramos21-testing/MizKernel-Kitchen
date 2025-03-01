@@ -110,7 +110,7 @@ jobs:
             cp MizKernel/out/* processing/
             ls MizKernel/out
             mkdir out
-         continue-on-error: true
+          continue-on-error: true
 
         - name: "Pull Image-gz-dtb (if present) to out"
           run: |
@@ -128,39 +128,8 @@ jobs:
         #     echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
         #     echo "DEBUG CLOG: ${{ env.CHANGELOG }}"
 
-        - name: "Patch with APatch"
-          if: ${{ github.event.inputs.apatch == 'true' }}
-          run: |
-            aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
-            chmod +x magiskboot
-            aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kptools-linux
-            chmod +x kptools-linux
-            # The aria2c is for downloading the boot.img from Galaxy A12s, if you want to use your own boot.img, edit the link
-            if [ ${{ github.event.inputs.use_uc_boot_template }} == 'true' ]; then
-              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot-uc.img
-              mv boot-uc.img processing/boot.img
-            else
-              aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/apatch-template/boot.img 
-              mv boot.img processing/boot.img
-            fi
-            aria2c -x 10 https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpimg-android
-            sudo mv magiskboot /usr/bin/magiskboot
-            sudo mv kptools-linux /usr/bin/kptools-linux
-            sudo chmod +x /usr/bin/magiskboot
-            sudo chmod +x /usr/bin/kptools-linux
-            mv kpimg-android processing/kpimg-android
-            cd processing
-            magiskboot unpack boot.img
-            rm -rf kernel
-            kptools-linux -p --image Image-${{github.run_id}} --skey ${{ github.event.inputs.apatch_password }} --kpimg kpimg-android --out kernel
-            magiskboot repack boot.img
-            mv new-boot.img ../out/boot.img 
-            cp -rf kernel ../out/Image
-            cd ..
-            
 
-        - name: "Patch Boot Img (Non-Apatch)"
-          if: ${{ github.event.inputs.apatch == 'false' }}
+        - name: "Patch Boot Img"
           run: |
             aria2c -x 10 https://magojohnji.github.io/magiskboot-linux/x86_64/magiskboot
             chmod +x magiskboot
