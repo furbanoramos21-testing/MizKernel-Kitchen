@@ -4,7 +4,7 @@
 # This file will be deprecated soon
 
 
-name: "Android Kernel Builder - v1 : MizKernel"
+name: "Android Kernel Builder - v1 : Aosp Kernel Test"
 
 on:
   workflow_dispatch:
@@ -12,12 +12,20 @@ on:
       version:
         description: "What forked version you want from MizKernel"
         required: true
-        default: "stable"
+        default: "master"
         type: choice
         options:
-          - "stable"
-          - "unstable"
-          - "testing"
+          - "master"
+          - "oneui"
+      device:
+        description: "Select device"
+        required: true
+        default: "a21snsxx"
+        type: choice
+        options:
+          - "a21snsxx"
+          - "a12s"
+          - "m12"
       apatch:
         description: "Apply APatch to the Kernel"
         required: true
@@ -67,25 +75,31 @@ jobs:
             sudo apt upgrade -y
             sudo apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
             sudo apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
-            git clone https://github.com/Mizumo-prjkt/clang-r383902
+            git clone https://github.com/NeebeStuff/prebuilts_clang_host_linux-x86_clang-r547379 clang-r547379
             git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
           
         - name: "Clone the Kernel"
           run: |
-            git clone https://github.com/MizProject/MizKernel-GalaxyA12s MizKernel
+            git clone https://github.com/furbanoramos21-testing/upstream_exynos850 MizKernel
             cd MizKernel
             git checkout ${{ github.event.inputs.version }}
             cd ..
         
         - name: "Move the toolchains"
           run: |
-            mv clang-r383902 MizKernel/clang-r383902
+            mv clang-r547379 MizKernel/clang-r547379
             mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
 
         - name: "Build the kernel"
           run: |
             cd MizKernel
-            ./build_kernel.sh
+            export PATH=$(pwd)/aarch64-linux-android-4.9-llvm/bin/:$(pwd)/clang-r450784d/bin/:$PATH
+            export PLATFORM_VERSION=12
+            export ANDROID_MAJOR_VERSION=s
+            export ARCH=arm64
+            mkdir out
+            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-androidkernel- CLANG_TRIPLE=aarch64-linux-gnu- exynos850-${{ github.event.inputs.device }}_defconfig
+            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-androidkernel- CLANG_TRIPLE=aarch64-linux-gnu- -j64
             cd ..
 
         - name: "Pull Finished Kernel"
@@ -93,7 +107,10 @@ jobs:
 
             mkdir processing
             cp MizKernel/arch/arm64/boot/Image processing/Image-${{github.run_id}}
+            cp MizKernel/out/* processing/
+            ls MizKernel/out
             mkdir out
+         continue-on-error: true
 
         - name: "Pull Image-gz-dtb (if present) to out"
           run: |
@@ -194,6 +211,7 @@ jobs:
             zip -r MizKernel-${{github.run_id}}-twrp.zip ./*
             cd ..
             mv AnyKernel/MizKernel-${{github.run_id}}-twrp.zip out/MizKernel-${{github.run_id}}-twrp.zip
+          continue-on-error: true
           
 
         - name: "To Github Artifact"
