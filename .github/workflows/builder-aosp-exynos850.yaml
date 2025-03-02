@@ -92,7 +92,7 @@ jobs:
         - name: "Build the kernel"
           run: |
             cd MizKernel
-            export PATH=$(pwd)/clang-r450784d/bin/:$PATH
+            export PATH=$(pwd)/clang-r547379/bin/:$PATH
             export ARCH=arm64
             export LLVM=1
             export LLVM_IAS=1
