@@ -4,7 +4,7 @@
 # This file will be deprecated soon
 
 
-name: "Android Kernel Builder - v1 : Aosp Kernel Test"
+name: "Android Kernel Builder - v1 : Aosp Kernel Test for Exynos 850"
 
 on:
   workflow_dispatch:
@@ -54,7 +54,7 @@ permissions:
 
 jobs:
   build:
-    name: "Build MizKernel"
+    name: "Build Kernel"
     runs-on: ubuntu-22.04
     steps:
         - name: "Checkout"
@@ -92,13 +92,13 @@ jobs:
         - name: "Build the kernel"
           run: |
             cd MizKernel
-            export PATH=$(pwd)/aarch64-linux-android-4.9/bin/:$(pwd)/clang-r450784d/bin/:$PATH
-            export PLATFORM_VERSION=12
-            export ANDROID_MAJOR_VERSION=s
+            export PATH=$(pwd)/clang-r450784d/bin/:$PATH
             export ARCH=arm64
+            export LLVM=1
+            export LLVM_IAS=1
             mkdir out
-            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-androidkernel- CLANG_TRIPLE=aarch64-linux-gnu- exynos850-${{ github.event.inputs.device }}_defconfig
-            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-androidkernel- CLANG_TRIPLE=aarch64-linux-gnu- -j64
+            make ARCH=arm64 O=out CC=clang exynos850-${{ github.event.inputs.device }}_defconfig
+            make ARCH=arm64 O=out CC=clang -j64
             cd ..
 
         - name: "Pull Finished Kernel"
