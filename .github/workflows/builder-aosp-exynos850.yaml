@@ -76,7 +76,9 @@ jobs:
             sudo apt upgrade -y
             sudo apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
             sudo apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
-            git clone https://github.com/KudProject/aarch64-linux-android-4.9
+            wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r547379.tar.gz
+            mkdir clang-r547379
+            tar -xvzf clang-r547379.tar.gz -C ./clang-r547379
           
         - name: "Clone the Kernel"
           run: |
@@ -87,7 +89,7 @@ jobs:
         
         - name: "Move the toolchains"
           run: |
-            mv aarch64-linux-android-4.9 MizKernel/aarch64-linux-android-4.9
+            mv clang-r547379 MizKernel/clang-r547379
 
         - name: "Build the kernel"
           run: |
