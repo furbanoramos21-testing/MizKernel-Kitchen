@@ -1,7 +1,7 @@
 # This is for Building the Android Kernel
 # Builder v0.1 Made for MizKernel
 # Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung (on exynos a12s)
-# This file will be deprecated soon
+# This file is now being adapted by furbanoramos25
 
 
 name: "Android Kernel Builder - v1 : Aosp Kernel Test for Exynos 850"
@@ -107,14 +107,20 @@ jobs:
           run: |
 
             mkdir processing
+            mkdir out
+            mkdir MizKernel/out
             cp MizKernel/arch/arm64/boot/Image processing/Image-${{github.run_id}}
             cp MizKernel/out/* processing/
+            cd ..
+          continue-on-error: true
+            
+        - name: "Upload files to telegram"
+          run: |
             cd MizKernel
             zip -r z out
             curl -s -F document=@out.zip "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending out directory to telegram"
             curl -s -F document=@arch/arm64/boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
             cd ..
-            mkdir out
           continue-on-error: true
 
         - name: "Pull Image-gz-dtb (if present) to out"
