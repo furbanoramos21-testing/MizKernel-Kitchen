@@ -108,7 +108,7 @@ jobs:
 
             mkdir processing
             mkdir out
-            mkdir MizKernel/out
+            ls MizKernel/out
             cp MizKernel/arch/arm64/boot/Image processing/Image-${{github.run_id}}
             cp MizKernel/out/* processing/
             cd ..
@@ -116,8 +116,9 @@ jobs:
             
         - name: "Upload files to telegram"
           run: |
-            cd MizKernel
-            zip -r z out
+            cd MizKernel/out
+            zip z * --out ../out.zip
+            cd ..
             curl -s -F document=@out.zip "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending out directory to telegram"
             curl -s -F document=@arch/arm64/boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
             cd ..
