@@ -115,23 +115,22 @@ jobs:
             ls MizKernel/out/arch/arm64/boot/dts/samsung
             cd MizKernel
             curl -s -F document=@out/arch/arm64/boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
-            cp MizKernel/arch/arm64/boot/Image processing/Image-${{github.run_id}}
-            cp MizKernel/out/* processing/
             cd ..
+            cp MizKernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
           continue-on-error: true
             
         - name: "Upload files to telegram"
           run: |
-            cd MizKernel
-            curl -s -F document=@arch/arm64/boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
-            cd ..
+            cd MizKernel/out/arch/arm64
+            curl -s -F document=@boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
+            cd ../../../..
           continue-on-error: true
 
         - name: "Pull Image-gz-dtb (if present) to out"
           run: |
             echo "Pulling Image-gzdtb"
             echo "If this session fails, either, it's not config in defconfig or idk where, probably in the shadow realm"
-            cp MizKernel/arch/arm64/boot/Image.gz-dtb out/Image.gz-dtb
+            cp MizKernel/out/arch/arm64/boot/Image.gz-dtb out/Image.gz-dtb
           continue-on-error: true
 
         # Variable fetching is disabled because it's not working
