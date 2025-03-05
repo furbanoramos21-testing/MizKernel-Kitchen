@@ -1,6 +1,6 @@
 # This is for Building the Android Kernel
 # Builder v0.1 Made for MizKernel
-# Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung (on exynos a12s)
+# Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung (on exynos 850)
 # This file is now being adapted by furbanoramos25
 
 
@@ -118,13 +118,7 @@ jobs:
             cd ..
             cp MizKernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
           continue-on-error: true
-            
-        - name: "Upload files to telegram"
-          run: |
-            cd MizKernel/out/arch/arm64
-            curl -s -F document=@boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
-            cd ../../../..
-          continue-on-error: true
+
 
         - name: "Pull Image-gz-dtb (if present) to out"
           run: |
@@ -184,27 +178,25 @@ jobs:
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               EXTRMSG=" APatch is applied"
             fi
-            echo "MizKernel-${{github.run_id}}" - Type: ${{github.event.inputs.version}} >> AnyKernel/version
+            echo "upstream_exynos850-${{github.run_id}}" - Branch: ${{github.event.inputs.version}} >> AnyKernel/version
             echo "Autogen by Github Actions" >> AnyKernel/version
             echo "Build Date: $(date)" >> AnyKernel/version
-            echo "See the changelog for more info" >> AnyKernel/version
-            echo "Link: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG" >> AnyKernel/version
 
             cd AnyKernel
-            zip -r MizKernel-${{github.run_id}}-twrp.zip ./*
+            zip -r Test-${{github.run_id}}-twrp.zip ./*
             cd ..
-            mv AnyKernel/MizKernel-${{github.run_id}}-twrp.zip out/MizKernel-${{github.run_id}}-twrp.zip
+            mv AnyKernel/Test-${{github.run_id}}-twrp.zip out/Test-${{github.run_id}}-twrp.zip
           continue-on-error: true
           
 
         - name: "To Github Artifact"
           uses: actions/upload-artifact@v4
           with:
-            name: "MizKernel-${{github.run_id}}-artifacts"
+            name: "Test-${{github.run_id}}-artifacts"
             path: |
               out/boot.img
               out/Image
-              out/MizKernel-${{github.run_id}}-twrp.zip
+              out/Test-${{github.run_id}}-twrp.zip
           continue-on-error: true
 
 
@@ -214,7 +206,7 @@ jobs:
           with:
             files: |
               out/*
-            name: "MizKernel - ${{github.run_id}} - ${{ github.event.inputs.version }}"
+            name: "Test build - ${{github.run_id}} - ${{ github.event.inputs.version }}"
             tag_name: "${{ github.run_id }}"
             body: |
               ### This is a test kernel built by github actions ###
@@ -237,12 +229,5 @@ jobs:
               
               If Apatch is set to true, that means the kernel is patched with APatch
               If false, the kernel is not patched with APatch, thus ignore the Apatch Password
-
-              For A12s using APatch already, trying to apply an update, i suggest using the zip variant instead, no need to reflash boot partition.
               
-
-              Link: https://github.com/MizProject/MizKernel-Kitchen/releases/tag/${{ github.run_id }}
-
-              Changelog: https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{ github.event.inputs.version }}/CHANGELOG
-
      
