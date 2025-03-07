@@ -96,7 +96,7 @@ jobs:
             cd MizKernel
             export PATH=$(pwd)/clang-r383902/bin/:$PATH
             export CROSS_COMPILE=$(pwd)/aarch64-linux-android-4.9-llvm/bin/aarch64-linux-android-
-            export CLANG_TRIPLE=aarch64-linux-gnu-
+            export CC=$(pwd)/clang-r383902/bin/clang
             export PLATFORM_VERSION=13
             export ANDROID_MAJOR_VERSION=t
             export ARCH=arm64
