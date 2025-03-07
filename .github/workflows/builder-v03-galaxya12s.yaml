@@ -82,24 +82,25 @@ jobs:
             git checkout ${{ github.event.inputs.version }}
             cd ..
         
-        # Bomb
+        # Deprecate the toolchains later since it should be the script that handles the toolchain handling now (using submodules)
+        # At this variant, the unstable_ksu has already have a better toolchain handling
         - name: "Move the toolchains"
           run: |
             git clone https://github.com/Mizumo-prjkt/clang-r383902
-            git clone https://github.com/KudProject/aarch64-linux-android-4.9
+            git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
             mv clang-r383902 MizKernel/clang-r383902
-            mv aarch64-linux-android-4.9 MizKernel/aarch64-linux-android-4.9
+            mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
 
         - name: "Build the kernel"
           run: |
             cd MizKernel
-            export PATH=$(pwd)/aarch64-linux-android-4.9/bin/:$(pwd)/clang-r383902/bin/:$PATH
+            export PATH=$(pwd)/aarch64-linux-android-4.9-llvm/bin/:$(pwd)/clang-r383902/bin/:$PATH
             export PLATFORM_VERSION=13
             export ANDROID_MAJOR_VERSION=t
             export ARCH=arm64
             mkdir out
-            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-androidkernel- CLANG_TRIPLE=aarch64-linux-gnu- exynos850-${{ github.event.inputs.device }}_defconfig
-            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-androidkernel- CLANG_TRIPLE=aarch64-linux-gnu- -j64
+            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-android- CLANG_TRIPLE=aarch64-linux-gnu- exynos850-${{ github.event.inputs.device }}_defconfig
+            make ARCH=arm64 O=out CROSS_COMPILE=aarch64-linux-android- CLANG_TRIPLE=aarch64-linux-gnu- -j64
             cd ..
 
         - name: "Pull Finished Kernel"
