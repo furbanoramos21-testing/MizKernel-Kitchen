@@ -88,14 +88,14 @@ jobs:
           if: ${{ github.event.inputs.version != 'unstable_ksu' }}
           run: |
             git clone https://github.com/Mizumo-prjkt/clang-r383902
-            git clone https://github.com/Mizumo-prjkt/aarch64-linux-android-4.9-llvm
+            git clone https://github.com/KudProject/aarch64-linux-android-4.9
             mv clang-r383902 MizKernel/clang-r383902
-            mv aarch64-linux-android-4.9-llvm MizKernel/aarch64-linux-android-4.9-llvm
+            mv aarch64-linux-android-4.9 MizKernel/aarch64-linux-android-4.9
 
         - name: "Build the kernel"
           run: |
             cd MizKernel
-            export PATH=$(pwd)/aarch64-linux-android-4.9-llvm/bin/:$(pwd)/clang-r383902/bin/:$PATH
+            export PATH=$(pwd)/aarch64-linux-android-4.9/bin/:$(pwd)/clang-r383902/bin/:$PATH
             export PLATFORM_VERSION=13
             export ANDROID_MAJOR_VERSION=t
             export ARCH=arm64
