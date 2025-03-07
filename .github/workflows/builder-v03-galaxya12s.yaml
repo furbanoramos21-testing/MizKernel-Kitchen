@@ -95,13 +95,12 @@ jobs:
           run: |
             cd MizKernel
             export PATH=$(pwd)/clang-r383902/bin/:$PATH
-            export CROSS_COMPILE=$(pwd)/aarch64-linux-android-4.9-llvm/bin/aarch64-linux-android-
-            export PLATFORM_VERSION=13
-            export ANDROID_MAJOR_VERSION=t
             export ARCH=arm64
+            export LLVM=1
+            export LLVM_IAS=1
             mkdir out
-            make ARCH=arm64 O=out CC=$(pwd)/clang-r383902/bin/clang exynos850-${{ github.event.inputs.device }}_defconfig
-            make ARCH=arm64 O=out CC=$(pwd)/clang-r383902/bin/clang -j64
+            make ARCH=arm64 O=out CC=clang exynos850-${{ github.event.inputs.device }}_defconfig
+            make ARCH=arm64 O=out CC=clang -j64
             cd ..
 
         - name: "Pull Finished Kernel"
