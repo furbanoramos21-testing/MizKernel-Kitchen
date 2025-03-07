@@ -82,10 +82,8 @@ jobs:
             git checkout ${{ github.event.inputs.version }}
             cd ..
         
-        # Deprecate the toolchains later since it should be the script that handles the toolchain handling now (using submodules)
-        # At this variant, the unstable_ksu has already have a better toolchain handling
+        # Bomb
         - name: "Move the toolchains"
-          if: ${{ github.event.inputs.version != 'unstable_ksu' }}
           run: |
             git clone https://github.com/Mizumo-prjkt/clang-r383902
             git clone https://github.com/KudProject/aarch64-linux-android-4.9
