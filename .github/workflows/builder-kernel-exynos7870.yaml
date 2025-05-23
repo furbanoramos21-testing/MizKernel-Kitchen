@@ -104,7 +104,7 @@ jobs:
             mkdir processing
             mkdir out
             echo "Checking out directory"
-            cp Kernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
+            cp Kernel/out/Image processing/Image-${{github.run_id}}
           continue-on-error: true
 
 
