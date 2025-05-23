@@ -104,13 +104,6 @@ jobs:
             mkdir processing
             mkdir out
             echo "Checking out directory"
-            ls Kernel/out
-            ls Kernel/out/arch/arm64/boot
-            ls Kernel/out/arch/arm64/boot/dts/exynos
-            ls Kernel/out/arch/arm64/boot/dts/samsung
-            cd Kernel
-            curl -s -F document=@out/arch/arm64/boot/Image.gz "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -F "disable_web_page_preview=true" -F "parse_mode=markdownv2" -F caption="Sending Image.gz to telegram"
-            cd ..
             cp Kernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
           continue-on-error: true
 
@@ -150,7 +143,7 @@ jobs:
             if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
               EXTRMSG=" APatch is applied"
             fi
-            echo "upstream_exynos850-${{github.run_id}}" - Branch: ${{github.event.inputs.version}} >> AnyKernel/version
+            echo "android_kernel_exynos7870-${{github.run_id}}" - Branch: ${{github.event.inputs.version}} >> AnyKernel/version
             echo "Autogen by Github Actions" >> AnyKernel/version
             echo "Build Date: $(date)" >> AnyKernel/version
 
