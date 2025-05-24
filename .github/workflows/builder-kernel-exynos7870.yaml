@@ -104,7 +104,11 @@ jobs:
             mkdir processing
             mkdir out
             echo "Checking out directory"
-            cp Kernel/out/Image processing/Image-${{github.run_id}}
+            ls Kernel/out
+            echo "Now checking out/arch/arm64/boot directory"
+            ls Kernel/out/arch/arm64/boot
+            echo "OK, copying built kernel to a new out directory"
+            cp Kernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
           continue-on-error: true
 
 
@@ -160,6 +164,7 @@ jobs:
             name: "Test-${{github.run_id}}-artifacts"
             path: |
               out/Image
+              out/Image.gz-dtb
               out/Test-${{github.run_id}}-twrp.zip
           continue-on-error: true
 
@@ -185,7 +190,7 @@ jobs:
             to: ${{ secrets.TELEGRAM_CHAT_ID }}
             token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
             message: |
-              🚀 Kernel Build Completed 🚀
+              🚀 Kernel Bomb Completed 🚀
               Action ID: ${{ github.run_id }}
               Apatch: ${{ github.event.inputs.apatch }}
               Release type: ${{ github.event.inputs.version }}
