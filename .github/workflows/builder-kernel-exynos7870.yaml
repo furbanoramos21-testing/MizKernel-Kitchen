@@ -108,7 +108,7 @@ jobs:
             echo "Now checking out/arch/arm64/boot directory"
             ls Kernel/out/arch/arm64/boot
             echo "OK, copying built kernel to a new out directory"
-            cp -r Kernel/out/arch/arm64/boot/* processing/
+            cp -r Kernel/out/arch/arm64/boot/* out/
           continue-on-error: true
 
 
@@ -165,7 +165,7 @@ jobs:
             path: |
               out/Image
               out/Image.gz-dtb
-              out/Test-${{github.run_id}}-twrp.zip
+              out/dtb
           continue-on-error: true
 
 
