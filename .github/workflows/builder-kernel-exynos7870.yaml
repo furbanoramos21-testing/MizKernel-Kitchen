@@ -108,7 +108,7 @@ jobs:
             echo "Now checking out/arch/arm64/boot directory"
             ls Kernel/out/arch/arm64/boot
             echo "OK, copying built kernel to a new out directory"
-            cp Kernel/out/arch/arm64/boot/Image processing/Image-${{github.run_id}}
+            cp -r Kernel/out/arch/arm64/boot/* processing/
           continue-on-error: true
 
 
@@ -128,34 +128,34 @@ jobs:
         #     echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
         #     echo "DEBUG CLOG: ${{ env.CHANGELOG }}"
 
-        - name: "Zip it"
-          run: |
-            aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/zi-template/AnyKernel-TEMPLATE.zip
-            mkdir AnyKernel
-            mv AnyKernel-TEMPLATE.zip AnyKernel
-            cd AnyKernel
-            unzip AnyKernel-TEMPLATE.zip
-            rm -rf AnyKernel-TEMPLATE.zip
-            rm -rf Image
-            cd ..
-            if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
-              cp processing/kernel AnyKernel/Image
-            else
-              cp processing/kernel AnyKernel/Image
-            fi
-            rm -rf AnyKernel/version
-            if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
-              EXTRMSG=" APatch is applied"
-            fi
-            echo "android_kernel_exynos7870-${{github.run_id}}" - Branch: ${{github.event.inputs.version}} >> AnyKernel/version
-            echo "Autogen by Github Actions" >> AnyKernel/version
-            echo "Build Date: $(date)" >> AnyKernel/version
+        # - name: "Zip it"
+        #   run: |
+        #     aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/zi-template/AnyKernel-TEMPLATE.zip
+        #     mkdir AnyKernel
+        #     mv AnyKernel-TEMPLATE.zip AnyKernel
+        #     cd AnyKernel
+        #     unzip AnyKernel-TEMPLATE.zip
+        #     rm -rf AnyKernel-TEMPLATE.zip
+        #     rm -rf Image
+        #     cd ..
+        #     if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
+        #       cp processing/kernel AnyKernel/Image
+        #     else
+        #       cp processing/kernel AnyKernel/Image
+        #     fi
+        #     rm -rf AnyKernel/version
+        #     if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
+        #       EXTRMSG=" APatch is applied"
+        #     fi
+        #     echo "android_kernel_exynos7870-${{github.run_id}}" - Branch: ${{github.event.inputs.version}} >> AnyKernel/version
+        #     echo "Autogen by Github Actions" >> AnyKernel/version
+        #     echo "Build Date: $(date)" >> AnyKernel/version
 
-            cd AnyKernel
-            zip -r Test-${{github.run_id}}-twrp.zip ./*
-            cd ..
-            mv AnyKernel/Test-${{github.run_id}}-twrp.zip out/Test-${{github.run_id}}-twrp.zip
-          continue-on-error: true
+        #     cd AnyKernel
+        #     zip -r Test-${{github.run_id}}-twrp.zip ./*
+        #     cd ..
+        #     mv AnyKernel/Test-${{github.run_id}}-twrp.zip out/Test-${{github.run_id}}-twrp.zip
+        #   continue-on-error: true
           
 
         - name: "To Github Artifact"
