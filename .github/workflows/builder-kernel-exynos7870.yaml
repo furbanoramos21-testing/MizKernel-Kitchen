@@ -24,6 +24,12 @@ on:
         type: choice
         options:
           - "j6lte"
+          - "j7velte"
+          - "j7xelte"
+          - "a6lte"
+          - "on7xelte"
+          - "j7y17lte"
+          - "j5y17lte"
       # delete apatch for now
       # apatch:
        #  description: "Apply APatch to the Kernel"
