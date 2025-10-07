@@ -12,11 +12,11 @@ on:
       version:
         description: "What branch you want from kernel"
         required: true
-        default: "aosp-13-vendor"
+        default: "wip"
         type: choice
         options:
-          - "master"
-          - "aosp-13-vendor"
+          - "kvm"
+          - "wip"
       device:
         description: "Select device"
         required: true
