@@ -12,11 +12,12 @@ on:
       version:
         description: "What branch you want from kernel"
         required: true
-        default: "wip"
+        default: "wip-tmp"
         type: choice
         options:
           - "kvm"
           - "wip"
+          - "wip-tmp"
       device:
         description: "Select device"
         required: true
@@ -44,12 +45,12 @@ on:
       notify_telegram_channel:
         description: "Notify the Telegram Channel (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
         required: true
-        default: false
+        default: true
         type: boolean
       use_uc_boot_template:
         description: "Use the UC Boot Template"
         required: true
-        default: true
+        default: false
         type: boolean
 
 permissions:
