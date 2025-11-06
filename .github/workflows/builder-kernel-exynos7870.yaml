@@ -17,7 +17,7 @@ on:
         options:
           - "kvm"
           - "wip"
-          - "wip-tmp"
+          - "cgroup-tmp"
       device:
         description: "Select device"
         required: true
