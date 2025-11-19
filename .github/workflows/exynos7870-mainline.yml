@@ -1,0 +1,207 @@
+# This is for Building kernel
+# Originally was for MizKernel, but now this yml is being used for some other tests
+# Note that the kernel is only Image and not Image.gz-dtb because samsung and the gz-dtb wont work on samsung (on exynos 850)
+# This file is now being adapted by furbanoramos25
+
+
+name: "Android Kernel Builder - mainline : Kernel Test for Exynos 7870"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "What branch you want from kernel"
+        required: true
+        default: "mainline"
+        type: choice
+        options:
+          - "mainline"
+      device:
+        description: "Select device"
+        required: true
+        default: "j6lte"
+        type: choice
+        options:
+          - "j6lte"
+          - "j7velte"
+          - "j7xelte"
+          - "a6lte"
+          - "on7xelte"
+          - "j7y17lte"
+          - "j5y17lte"
+      # delete apatch for now
+      # apatch:
+       #  description: "Apply APatch to the Kernel"
+       # required: true
+       # default: false
+       # type: boolean
+      # apatch_password:
+       # description: "Password for APatch, don't forget the password or else you're locked out from root access lol"
+       # required: true
+       # default: "A12345678"
+       # type: string
+      notify_telegram_channel:
+        description: "Notify the Telegram Channel (Make sure you set up the secrets with variable named: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)"
+        required: true
+        default: true
+        type: boolean
+      use_uc_boot_template:
+        description: "Use the UC Boot Template"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+
+jobs:
+  build:
+    name: "Build Kernel"
+    runs-on: ubuntu-22.04
+    steps:
+        - name: "Checkout"
+          uses: actions/checkout@v2
+
+        - name: "Set up Timezone"
+          run: |
+            # Only set time to Asia/Manila and NEVER ANY TZ
+            sudo timedatectl set-timezone Asia/Manila
+
+        #- name: "Clean up Bloated Actions"
+        #  uses: rokibhasansagar/slimhub_actions@main
+        #  with:
+        #    retain: "docker_imgcache,docker_buildkit,container_tools,nodejs_npm,toolcache_node"
+
+        - name: "Set up dependencies"
+          run: |
+            sudo apt update
+            sudo apt upgrade -y
+            sudo apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
+            sudo apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
+            git clone https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7 linaro-7.5.0
+          
+        - name: "Clone the Kernel"
+          run: |
+            git clone https://github.com/furbanoramos21-testing/android_kernel_samsung_exynos7870 Kernel
+            cd Kernel
+            git checkout ${{ github.event.inputs.version }}
+            cd ..
+        
+        - name: "Move the toolchains"
+          run: |
+            mv linaro-7.5.0 Kernel/gcc-linaro-7.5.0
+
+        - name: "Build the kernel"
+          run: |
+            cd Kernel
+            export ARCH=arm64
+            export CROSS_COMPILE=$(pwd)/gcc-linaro-7.5.0/bin/aarch64-linux-gnu-
+            export ANDROID_MAJOR_VERSION=q
+            export ANDROID_PLATFORM_VERSION=10
+            make O=./out exynos7870.config postmarketos.config
+            make O=./out -j64
+            cd ..
+
+        - name: "Pull Finished Kernel"
+          run: |
+
+            mkdir processing
+            mkdir out
+            echo "Checking out directory"
+            ls Kernel/out
+            echo "Now checking out/arch/arm64/boot directory"
+            ls Kernel/out/arch/arm64/boot
+            echo "OK, copying built kernel to a new out directory"
+            cp -r Kernel/out/arch/arm64/boot/* out/
+          continue-on-error: true
+
+
+        - name: "Pull Image-gz-dtb (if present) to out"
+          run: |
+            echo "Pulling Image-gzdtb"
+            echo "If this session fails, either, it's not config in defconfig or idk where, probably in the shadow realm"
+            cp Kernel/out/arch/arm64/boot/Image.gz-dtb out/Image.gz-dtb
+          continue-on-error: true
+
+        # Variable fetching is disabled because it's not working
+
+        # - name: "Variable fetching"
+        #   run: |
+        #     echo "IDENTIFIER=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/CHANGELOG | cat | tr -d '\n\r')" >> $GITHUB_ENV
+        #     echo "CHANGELOG=$(curl -s https://raw.githubusercontent.com/MizProject/MizKernel-GalaxyA12s/refs/heads/${{github.event.inputs.version}}/IDENTIFIER | cat | tr -d '\n\r')" >> $GITHUB_ENV
+        #     echo "DEBUG IDENT: ${{ env.IDENTIFIER }}"
+        #     echo "DEBUG CLOG: ${{ env.CHANGELOG }}"
+
+        # - name: "Zip it"
+        #   run: |
+        #     aria2c -x 10 https://github.com/MizProject/MizKernel-GalaxyA12s/releases/download/zi-template/AnyKernel-TEMPLATE.zip
+        #     mkdir AnyKernel
+        #     mv AnyKernel-TEMPLATE.zip AnyKernel
+        #     cd AnyKernel
+        #     unzip AnyKernel-TEMPLATE.zip
+        #     rm -rf AnyKernel-TEMPLATE.zip
+        #     rm -rf Image
+        #     cd ..
+        #     if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
+        #       cp processing/kernel AnyKernel/Image
+        #     else
+        #       cp processing/kernel AnyKernel/Image
+        #     fi
+        #     rm -rf AnyKernel/version
+        #     if [ ${{ github.event.inputs.apatch }} == 'true' ]; then
+        #       EXTRMSG=" APatch is applied"
+        #     fi
+        #     echo "android_kernel_exynos7870-${{github.run_id}}" - Branch: ${{github.event.inputs.version}} >> AnyKernel/version
+        #     echo "Autogen by Github Actions" >> AnyKernel/version
+        #     echo "Build Date: $(date)" >> AnyKernel/version
+
+        #     cd AnyKernel
+        #     zip -r Test-${{github.run_id}}-twrp.zip ./*
+        #     cd ..
+        #     mv AnyKernel/Test-${{github.run_id}}-twrp.zip out/Test-${{github.run_id}}-twrp.zip
+        #   continue-on-error: true
+          
+
+        - name: "To Github Artifact"
+          uses: actions/upload-artifact@v4
+          with:
+            name: "Test-${{github.run_id}}-artifacts"
+            path: |
+              out/Image
+              out/Image.gz-dtb
+              out/dtb
+          continue-on-error: true
+
+
+
+        - name: "Deploy to Github Release"
+          uses: softprops/action-gh-release@v2
+          with:
+            files: |
+              out/*
+            name: "Test build - ${{github.run_id}} - ${{ github.event.inputs.version }}"
+            tag_name: "${{ github.run_id }}"
+            body: |
+              ### This is a test kernel built by github actions ###
+          env:
+            GITHUB_TOKEN: ${{ secrets.GH_FALLBACK_TOKEN }} 
+
+
+        - name: "Notify Telegram Channel"
+          if: ${{ github.event.inputs.notify_telegram_channel == 'true' }}
+          uses: appleboy/telegram-action@master
+          with:
+            to: ${{ secrets.TELEGRAM_CHAT_ID }}
+            token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+            message: |
+              🚀 Kernel Bomb Completed 🚀
+              Action ID: ${{ github.run_id }}
+              Apatch: ${{ github.event.inputs.apatch }}
+              Release type: ${{ github.event.inputs.version }}
+              Apatch Password: ${{ github.event.inputs.apatch_password }}
+              
+              If Apatch is set to true, that means the kernel is patched with APatch
+              If false, the kernel is not patched with APatch, thus ignore the Apatch Password
+              
+     
