@@ -88,9 +88,9 @@ jobs:
             git checkout ${{ github.event.inputs.version }}
             cd ..
         
-        - name: "Move the toolchains"
-          run: |
-            mv linaro-7.5.0 Kernel/gcc-linaro-7.5.0
+       # - name: "Move the toolchains"
+       #   run: |
+       #     mv linaro-7.5.0 Kernel/gcc-linaro-7.5.0
 
         - name: "Build the kernel"
           run: |
