@@ -121,6 +121,7 @@ jobs:
           run: |
             echo "Pulling Image-gzdtb"
             echo "If this session fails, either, it's not config in defconfig or idk where, probably in the shadow realm"
+            cp Kernel/out/drivers/*/*.ko out/
             cp Kernel/out/arch/arm64/boot/Image.gz-dtb out/Image.gz-dtb
           continue-on-error: true
 
