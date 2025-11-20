@@ -79,7 +79,7 @@ jobs:
             sudo apt upgrade -y
             sudo apt install aria2 libncurses5 git python-is-python3 python2 python3 wget curl libc6-dev tar -y
             sudo apt install cpio default-jdk git-core gnupg flex bison gperf build-essential zip curl aria2 libc6-dev libncurses5-dev x11proto-core-dev libx11-dev libreadline6-dev libgl1-mesa-glx libgl1-mesa-dev python3 make sudo gcc g++ bc grep tofrodos python3-markdown libxml2-utils xsltproc zlib1g-dev -y
-            git clone https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7 linaro-7.5.0
+            # git clone https://github.com/adithya2306/prebuilts_gcc_linux-x86_aarch64_aarch64-linaro-7 linaro-7.5.0
           
         - name: "Clone the Kernel"
           run: |
@@ -96,7 +96,7 @@ jobs:
           run: |
             cd Kernel
             export ARCH=arm64
-            export CROSS_COMPILE=$(pwd)/gcc-linaro-7.5.0/bin/aarch64-linux-gnu-
+            # export CROSS_COMPILE=$(pwd)/gcc-linaro-7.5.0/bin/aarch64-linux-gnu-
             export ANDROID_MAJOR_VERSION=q
             export ANDROID_PLATFORM_VERSION=10
             make O=./out exynos7870.config postmarketos.config
